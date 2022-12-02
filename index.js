@@ -4,14 +4,21 @@ const ROCK_OPPONENT = "A";
 const PAPER_OPPONENT = "B";
 const SCISSORS_OPPONENT = "C";
 
-const ROCK_US = "X";
-const PAPER_US = "Y";
-const SCISSORS_US = "Z";
+// Changes as sign to lose, win or tie round
+const LOSE = "X";
+const DRAW = "Y";
+const WIN = "Z";
+
+const game_result_needed = [
+    {state: "lose", result: LOSE},
+    {state: "draw", result: DRAW},
+    {state: "win", result: WIN}
+];
 
 const game_object = [
-    {name: 'Rock', opponent: ROCK_OPPONENT, user: ROCK_US, id: 1},
-    {name: 'Paper', opponent: PAPER_OPPONENT, user: PAPER_US, id: 2},
-    {name: 'Scissors', opponent: SCISSORS_OPPONENT, user: SCISSORS_US, id: 3}
+    {name: 'Rock', opponent: ROCK_OPPONENT, id: 1},
+    {name: 'Paper', opponent: PAPER_OPPONENT, id: 2},
+    {name: 'Scissors', opponent: SCISSORS_OPPONENT, id: 3}
 ];
 
 try {
@@ -20,36 +27,30 @@ try {
     let total_user_points = 0;
     for (let i in data) {
         let game_value = data[i].split(" ");
-        const opponent_item = game_object.find((game) => game.opponent === game_value[0]);
-        const user_item = game_object.find((game) => game.user === game_value[1]);
 
-        if (opponent_item.name === user_item.name) {
-            console.log("this game is a draw");
-            total_user_points = total_user_points + 3 + user_item.id;
+        // find out if user needs to win, lose, or draw the round
+        const winloseordraw = game_result_needed.find((game) => game.result == game_value[1]);
+
+        // check if game needs to be a draw
+        if (winloseordraw.result === DRAW) {
+            const opponent_item = game_object.find((game) => game.opponent === game_value[0]);
+            total_user_points = total_user_points + 3 + opponent_item.id;
         }
 
-        if (user_item.id === 1 && opponent_item.id === 3){
-            total_user_points = total_user_points + user_item.id + 6;
+        // check if game needs to be a win
+        if (winloseordraw.result === WIN) {
+            const opponent_item = game_object.find((game) => game.opponent === game_value[0]);
+            let item = itemNeeded(opponent_item.name, WIN);
+            const item_needed = game_object.find((game) => game.name === item);
+            total_user_points = total_user_points + 6 + item_needed.id;
         }
 
-        if (opponent_item.id === 1 && user_item.id === 3){
-            total_user_points = total_user_points + 0 + user_item.id;
-        }
-
-        if (user_item.id === 3 && opponent_item.id === 2){
-            total_user_points = total_user_points + user_item.id + 6;
-        }
-
-        if (opponent_item.id === 3 && user_item.id === 2){
-            total_user_points = total_user_points + 0 + user_item.id;
-        }
-
-        if (user_item.id === 2 && opponent_item.id === 1){
-            total_user_points = total_user_points + user_item.id + 6;
-        }
-
-        if (opponent_item.id === 2 && user_item.id === 1){
-            total_user_points = total_user_points + 0 + user_item.id;
+        // check if game needs to be a loss
+        if (winloseordraw.result === LOSE) {
+            const opponent_item = game_object.find((game) => game.opponent === game_value[0]);
+            let item = itemNeeded(opponent_item.name, LOSE);
+            const item_needed = game_object.find((game) => game.name === item);
+            total_user_points = total_user_points + 0 + item_needed.id;
         }
 
     }
@@ -60,4 +61,35 @@ try {
 
 } catch (e) {
     console.error(e);
+}
+
+function itemNeeded(opponent_item, user_game_result) {
+    // check to see what item a user needs to win or lose the match
+    if (user_game_result === WIN) {
+        if (opponent_item === 'Rock') {
+            return 'Paper';
+        }
+
+        if (opponent_item === 'Scissors') {
+            return 'Rock';
+        }
+
+        if (opponent_item === 'Paper') {
+            return 'Scissors';
+        }
+    }
+
+    if (user_game_result === LOSE) {
+        if (opponent_item === 'Rock') {
+            return 'Scissors';
+        }
+
+        if (opponent_item === 'Scissors') {
+            return 'Paper';
+        }
+
+        if (opponent_item === 'Paper') {
+            return 'Rock';
+        }
+    }
 }
