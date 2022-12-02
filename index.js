@@ -4,31 +4,30 @@ try {
     const data = fs.readFileSync('calories.txt', 'utf8').toString().split("\n");
 
     let temp_var = 0;
-    let arr = new Array();
+    let elves_calories = new Array();
+    let top_elves_calorie_count = new Array();
 
-    let arr_again = new Array();
-
-    let highest_elves = 3;
+    const top_elf_count = 3;
 
     for (i in data) {
         if (data[i] != ""){
             temp_var += parseInt(data[i]);
         }else{
-            arr.push(temp_var);
+            elves_calories.push(temp_var);
             temp_var = 0;
         }
     }
 
-    console.log(Math.max(...arr));
+    console.log(Math.max(...elves_calories));
 
-    for (let i = 0; i < 3; i++) {
-        let x = Math.max(...arr);
+    for (let i = 0; i < top_elf_count; i++) {
+        let highest_calorie_amount = Math.max(...elves_calories);
 
-        arr_again.push(x);
-        arr = arr.filter(e => e !== x);
+        top_elves_calorie_count.push(highest_calorie_amount);
+        elves_calories = elves_calories.filter(e => e !== highest_calorie_amount);
     }
-    console.log(arr_again);
-    console.log(arr_again.reduce((a, b) => a + b, 0));
+    console.log(top_elves_calorie_count);
+    console.log(top_elves_calorie_count.reduce((a, b) => a + b, 0));
 
 } catch (e) {
     console.error(e);
