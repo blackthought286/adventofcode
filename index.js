@@ -1,61 +1,66 @@
 const fs = require('fs');
 
-const ROCK_OPPONENT = "A";
-const PAPER_OPPONENT = "B";
-const SCISSORS_OPPONENT = "C";
-
-// Changes as sign to lose, win or tie round
-const LOSE = "X";
-const DRAW = "Y";
-const WIN = "Z";
-
-const game_result_needed = [
-    {state: "lose", result: LOSE},
-    {state: "draw", result: DRAW},
-    {state: "win", result: WIN}
-];
-
-const game_object = [
-    {name: 'Rock', opponent: ROCK_OPPONENT, id: 1},
-    {name: 'Paper', opponent: PAPER_OPPONENT, id: 2},
-    {name: 'Scissors', opponent: SCISSORS_OPPONENT, id: 3}
-];
-
 try {
-    const data = fs.readFileSync('rockpaperscissors.txt', 'utf8').toString().split("\n");
+    const data = fs.readFileSync('rucksack.txt', 'utf8').toString().split("\n");
 
-    let total_user_points = 0;
-    for (let i in data) {
-        let game_value = data[i].split(" ");
+    // create the priority numbers for small case and capitalized
+    const alphabet = 'abcdefghijklmnopqrstuvwxyz';
 
-        // find out if user needs to win, lose, or draw the round
-        const winloseordraw = game_result_needed.find((game) => game.result == game_value[1]);
+    const priority_case_container = new Array();
 
-        // check if game needs to be a draw
-        if (winloseordraw.result === DRAW) {
-            const opponent_item = game_object.find((game) => game.opponent === game_value[0]);
-            total_user_points = total_user_points + 3 + opponent_item.id;
-        }
+    let largePriorityValue = 26;
 
-        // check if game needs to be a win
-        if (winloseordraw.result === WIN) {
-            const opponent_item = game_object.find((game) => game.opponent === game_value[0]);
-            let item = itemNeeded(opponent_item.name, WIN);
-            const item_needed = game_object.find((game) => game.name === item);
-            total_user_points = total_user_points + 6 + item_needed.id;
-        }
+    let total_score = 0;
 
-        // check if game needs to be a loss
-        if (winloseordraw.result === LOSE) {
-            const opponent_item = game_object.find((game) => game.opponent === game_value[0]);
-            let item = itemNeeded(opponent_item.name, LOSE);
-            const item_needed = game_object.find((game) => game.name === item);
-            total_user_points = total_user_points + 0 + item_needed.id;
-        }
+    for (let i = 0; i < alphabet.length; i++) {
 
+        largePriorityValue += 1;
+
+        priority_case_container.push({
+            small_letter: alphabet[i],
+            large_letter: alphabet[i].toUpperCase(),
+            small_priority_number: i+1,
+            large_priority_number: largePriorityValue
+        });
     }
 
-    console.log(total_user_points);
+    let common_elements = new Array();
+
+    for (const [i, value] of data.entries()) {
+
+        // get the first half of the string and the 2nd half
+        let first_compartment = value.slice(0, value.length/2);
+        let second_compartment = value.slice(value.length/2);
+
+        let temp_value = '';
+
+        for (let i = 0; i < first_compartment.length; i++) {
+            if (second_compartment.includes(first_compartment[i])) {
+                temp_value = first_compartment[i];
+            }
+        }
+
+        common_elements.push(temp_value);
+    }
+
+    for (let i in common_elements) {
+        let small_letter_check = priority_case_container.find((container) => container.small_letter === common_elements[i]);
+        let large_letter_check = priority_case_container.find((container) => container.large_letter === common_elements[i]);
+
+
+        if (large_letter_check != undefined || large_letter_check != null){
+            //console.log(large_letter_check.large_priority_number);
+            total_score += large_letter_check.large_priority_number;
+        }
+
+        if (small_letter_check != undefined || small_letter_check != null){
+            //console.log(small_letter_check.small_priority_number);
+            total_score += small_letter_check.small_priority_number;
+        }
+    }
+
+    //console.log(common_elements);
+    console.log(total_score);
 
 
 
@@ -63,33 +68,3 @@ try {
     console.error(e);
 }
 
-function itemNeeded(opponent_item, user_game_result) {
-    // check to see what item a user needs to win or lose the match
-    if (user_game_result === WIN) {
-        if (opponent_item === 'Rock') {
-            return 'Paper';
-        }
-
-        if (opponent_item === 'Scissors') {
-            return 'Rock';
-        }
-
-        if (opponent_item === 'Paper') {
-            return 'Scissors';
-        }
-    }
-
-    if (user_game_result === LOSE) {
-        if (opponent_item === 'Rock') {
-            return 'Scissors';
-        }
-
-        if (opponent_item === 'Scissors') {
-            return 'Paper';
-        }
-
-        if (opponent_item === 'Paper') {
-            return 'Rock';
-        }
-    }
-}
