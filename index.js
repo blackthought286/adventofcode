@@ -26,17 +26,20 @@ try {
 
     let common_elements = new Array();
 
-    for (const [i, value] of data.entries()) {
+    const chunk_size = 3;
+    let myarr = new Array();
 
-        // get the first half of the string and the 2nd half
-        let first_compartment = value.slice(0, value.length/2);
-        let second_compartment = value.slice(value.length/2);
+    for (let i = 0; i < data.length; i += chunk_size) {
+        const chunk = data.slice(i, i + chunk_size);
+        myarr.push(chunk);
+    }
 
+    for (let i in myarr) {
+        let xstring = myarr[i][0];
         let temp_value = '';
-
-        for (let i = 0; i < first_compartment.length; i++) {
-            if (second_compartment.includes(first_compartment[i])) {
-                temp_value = first_compartment[i];
+        for (let x = 0; x < xstring.length; x++) {
+            if (myarr[i][1].includes(xstring[x]) && myarr[i][2].includes(xstring[x])) {
+                temp_value = xstring[x];
             }
         }
 
@@ -58,6 +61,7 @@ try {
             total_score += small_letter_check.small_priority_number;
         }
     }
+
 
     //console.log(common_elements);
     console.log(total_score);
