@@ -1,74 +1,63 @@
 const fs = require('fs');
 
+
 try {
-    const data = fs.readFileSync('rucksack.txt', 'utf8').toString().split("\n");
-
-    // create the priority numbers for small case and capitalized
-    const alphabet = 'abcdefghijklmnopqrstuvwxyz';
-
-    const priority_case_container = new Array();
-
-    let largePriorityValue = 26;
+    const data = fs.readFileSync('cleaning_assignments.txt', 'utf8').toString().split("\n");
 
     let total_score = 0;
 
-    for (let i = 0; i < alphabet.length; i++) {
+    for (let i in data) {
+        let elf_assignments = data[i].split(/[-,]/);
+        const first_elf_assignments = getRangeOfNumber(parseInt(elf_assignments[0]), parseInt(elf_assignments[1]));
+        const second_elf_assignments = getRangeOfNumber(parseInt(elf_assignments[2]), parseInt(elf_assignments[3]));
 
-        largePriorityValue += 1;
+        let found_total = 0;
 
-        priority_case_container.push({
-            small_letter: alphabet[i],
-            large_letter: alphabet[i].toUpperCase(),
-            small_priority_number: i+1,
-            large_priority_number: largePriorityValue
-        });
-    }
-
-    let common_elements = new Array();
-
-    const chunk_size = 3;
-    let myarr = new Array();
-
-    for (let i = 0; i < data.length; i += chunk_size) {
-        const chunk = data.slice(i, i + chunk_size);
-        myarr.push(chunk);
-    }
-
-    for (let i in myarr) {
-        let xstring = myarr[i][0];
-        let temp_value = '';
-        for (let x = 0; x < xstring.length; x++) {
-            if (myarr[i][1].includes(xstring[x]) && myarr[i][2].includes(xstring[x])) {
-                temp_value = xstring[x];
+        if (first_elf_assignments.length >= second_elf_assignments.length) {
+            for (let x = 0; x < second_elf_assignments.length; x++) {
+                let found = first_elf_assignments.includes(second_elf_assignments[x]);
+                if (found === true) {
+                    found_total += 1;
+                    // console.log(second_elf_assignments[x]);
+                }
             }
+
+            if (found_total === second_elf_assignments.length) {
+                total_score += 1;
+            }
+
+            found_total = 0;
         }
 
-        common_elements.push(temp_value);
+        if (second_elf_assignments.length > first_elf_assignments.length) {
+            for (let z = 0; z < first_elf_assignments.length; z++) {
+                let found = second_elf_assignments.includes(first_elf_assignments[z]);
+                if (found === true) {
+                    found_total += 1;
+                   // console.log(first_elf_assignments[z]);
+                }
+            }
+
+            if (found_total === first_elf_assignments.length) {
+                total_score += 1;
+            }
+
+            found_total = 0
+        }
     }
-
-    for (let i in common_elements) {
-        let small_letter_check = priority_case_container.find((container) => container.small_letter === common_elements[i]);
-        let large_letter_check = priority_case_container.find((container) => container.large_letter === common_elements[i]);
-
-
-        if (large_letter_check != undefined || large_letter_check != null){
-            //console.log(large_letter_check.large_priority_number);
-            total_score += large_letter_check.large_priority_number;
-        }
-
-        if (small_letter_check != undefined || small_letter_check != null){
-            //console.log(small_letter_check.small_priority_number);
-            total_score += small_letter_check.small_priority_number;
-        }
-    }
-
-
-    //console.log(common_elements);
     console.log(total_score);
-
-
 
 } catch (e) {
     console.error(e);
+}
+
+function getRangeOfNumber(start, end) {
+    let temp_arr = [];
+
+    for (let i = start; i <= end; i++) {
+        temp_arr.push(i);
+    }
+
+    return temp_arr;
 }
 
