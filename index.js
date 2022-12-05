@@ -42,8 +42,8 @@ try {
 
         // move the correct stacks and make sure you reverse stacks coming from first stack
         let x = container_move_from.crate.splice(-Math.abs(parseInt(elf_assignments[0])));
-        let b = x.reverse();
-        let y = container_move_to.crate.concat(b);
+        //let b = x.reverse();
+        let y = container_move_to.crate.concat(x);
         container_move_to.crate = y;
 
     }
