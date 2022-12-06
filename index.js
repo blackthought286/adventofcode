@@ -12,8 +12,8 @@ try {
     let findDup = true;
 
     for (let i in data) {
-        if (container.length >= 4){
-            let x = container.splice(-3);
+        if (container.length >= 14){
+            let x = container.splice(-13);
             container = x;
         }
 
@@ -21,13 +21,13 @@ try {
 
         findDup = container.every((e, i, a) => a.indexOf(e) === i);
 
-        if (findDup === false && container.length >= 4) {
+        if (findDup === false && container.length >= 14) {
             total++;
         }
 
         total_characters++;
 
-        if (findDup === true && container.length >= 4) {
+        if (findDup === true && container.length >= 14) {
             break;
         }
     }
